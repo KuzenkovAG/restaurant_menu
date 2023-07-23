@@ -1,5 +1,5 @@
 version: '3.3'
-
+# Для разработки и отладки
 services:
   db:
     image: postgres:13.10
