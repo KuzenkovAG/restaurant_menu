@@ -20,4 +20,9 @@ class Dish(DishBaseModel):
 
 class CreateDish(DishBaseModel):
     """Input schema for creation Dish."""
-    pass
+    price: Decimal
+
+
+class CreateDishOutput(DishBaseModel):
+    """Input schema for creation Dish."""
+    price: Decimal

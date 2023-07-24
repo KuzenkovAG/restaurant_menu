@@ -1,0 +1,21 @@
+version: '3.3'
+
+services:
+  db:
+    image: postgres:13.10
+    env_file:
+      - .env
+    volumes:
+      - ./pg_data/:/var/lib/postgresql/data
+
+  web:
+    build: .
+    env_file:
+      - .env
+    command:
+      sh -c "alembic upgrade head &&
+             uvicorn src.main:app --host 0.0.0.0 --port 8000"
+    ports:
+     - "8000:8000"
+    depends_on:
+      - db

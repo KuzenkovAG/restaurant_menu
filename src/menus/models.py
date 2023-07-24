@@ -16,7 +16,12 @@ class Menu(Base):
     title = Column(String(length=128), unique=True, nullable=False)
     description = Column(Text)
 
-    submenus = relationship('SubMenu', back_populates="menu", lazy='selectin')
+    submenus = relationship(
+        'SubMenu',
+        back_populates="menu",
+        cascade='all, delete',
+        lazy='selectin'
+    )
 
     submenus_count = column_property(
         select(func.count(SubMenu.id))

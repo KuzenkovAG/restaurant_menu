@@ -9,28 +9,14 @@ git clone git@github.com:KuzenkovAG/restaurant_menu.git
 Go to folder, create environment and activate it
 ```sh
 cd restaurant_menu/
-python -m venv venv
-source venv/Scripts/activate
-```
-Install requirements
-```sh
-pip install -r requirements.txt
 ```
 Create .env and **fill** like .env-example
 ```sh
 touch .env
 ```
-Create Postgres db in docker container
+Run in docker container
 ```sh
-docker compose -f docker-compose.yml up -d
-```
-Apply migration
-```sh
-alembic upgrade head
-```
-Run server
-```sh
-uvicorn src.main:app --reload
+docker compose -f docker-compose.production.yml up --build -d
 ```
 
 ## Usage

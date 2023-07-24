@@ -13,14 +13,7 @@ class Dish(Base):
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     title = Column(String(length=128))
     description = Column(Text)
-    submenu_id = Column(
-        UUID(as_uuid=True),
-        ForeignKey('submenus.id', ondelete='CASCADE')
-    )
+    submenu_id = Column(UUID(as_uuid=True), ForeignKey('submenus.id'))
     price = Column(Numeric(precision=10, scale=2))
 
-    submenu = relationship(
-        'SubMenu',
-        back_populates='dishes',
-        # cascade='delete'
-    )
+    submenu = relationship('SubMenu', back_populates='dishes')

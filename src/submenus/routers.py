@@ -4,9 +4,10 @@ from typing import List
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from src.core import crud as crude_core
 from src.database import get_async_session
 
-from . import crud, schemas
+from . import crud, models, schemas
 
 router = APIRouter(
     prefix='/menus/{menu_id}/submenus',
@@ -60,14 +61,18 @@ async def create_submenu(
             data: schemas.SubMenuCreationInput,
             db: AsyncSession = Depends(get_async_session)
         ):
-    submenu_obj = await crud.get_submenu_by_tutle(db=db, title=data.title)
+    submenu_obj = await crude_core.get_object_by_title(
+        db=db, title=data.title, model=models.SubMenu
+    )
     if submenu_obj:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Submenu already exist",
         )
-    created_submenu = await crud.create_submenu(
-        db=db, data=data, menu_id=menu_id
+    data = data.dict()
+    data['menu_id'] = menu_id
+    created_submenu = await crude_core.create_object(
+        db=db, data=data, model=models.SubMenu
     )
     return created_submenu
 
@@ -92,8 +97,8 @@ async def update_submenu(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="Submenu not found",
         )
-    submenu_new = await crud.update_submenu(
-        db=db, updated_data=data, submenu=submenu,
+    submenu_new = await crude_core.update_object(
+        db=db, updated_data=data, obj=submenu,
     )
     return submenu_new
 
@@ -112,5 +117,5 @@ async def delete_submenu(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="submenu not found",
         )
-    await crud.delete_submenu(db=db, submenu=submenu)
+    await crude_core.delete_object(db=db, obj=submenu)
     return None

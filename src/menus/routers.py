@@ -4,9 +4,10 @@ from typing import List
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from src.core import crud as crud_core
 from src.database import get_async_session
 
-from . import crud, schemas
+from . import crud,  models, schemas
 
 router = APIRouter(
     prefix='/menus',
@@ -54,13 +55,18 @@ async def create_menu(
             db: AsyncSession = Depends(get_async_session)
         ):
     """Create menu."""
-    menu_obj = await crud.get_menu_by_tutle(db=db, title=menu.title)
+    menu_obj = await crud_core.get_object_by_title(
+        db=db, title=menu.title, model=models.Menu
+    )
     if menu_obj:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Menu already exist",
         )
-    created_menu = await crud.create_menu(db=db, data=menu)
+    menu = menu.dict()
+    created_menu = await crud_core.create_object(
+        db=db, data=menu, model=models.Menu
+    )
     return created_menu
 
 
@@ -81,7 +87,9 @@ async def update_menu(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="Menu not found",
         )
-    menu_new = await crud.update_menu(db=db, menu=menu, updated_data=data)
+    menu_new = await crud_core.update_object(
+        db=db, obj=menu, updated_data=data
+    )
     return menu_new
 
 
@@ -100,5 +108,5 @@ async def delete_menu(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="menu not found",
         )
-    await crud.delete_menu(db=db, menu=menu)
+    await crud_core.delete_object(db=db, obj=menu)
     return None
