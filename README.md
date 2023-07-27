@@ -6,7 +6,7 @@ Clone repository
 ```sh
 git clone git@github.com:KuzenkovAG/restaurant_menu.git
 ```
-Go to folder, create environment and activate it
+Go to folder
 ```sh
 cd restaurant_menu/
 ```
