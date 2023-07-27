@@ -44,4 +44,3 @@ async def delete_object(db: AsyncSession, obj: BaseModel):
     """Delete object."""
     await db.delete(obj)
     await db.commit()
-
