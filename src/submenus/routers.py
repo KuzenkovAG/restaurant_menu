@@ -4,7 +4,7 @@ from typing import List
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from src.core import crud as crude_core
+from src.core import crud as crud_core
 from src.database import get_async_session
 
 from . import crud, models, schemas
@@ -25,8 +25,7 @@ async def get_submenus(
             db: AsyncSession = Depends(get_async_session),
         ):
     """Get list of SubMenus."""
-    submenus = await crud.get_submenus(db=db, menu_id=menu_id)
-    return submenus
+    return await crud.get_submenus(db=db, menu_id=menu_id)
 
 
 @router.get(
@@ -61,7 +60,7 @@ async def create_submenu(
             data: schemas.SubMenuCreationInput,
             db: AsyncSession = Depends(get_async_session)
         ):
-    submenu_obj = await crude_core.get_object_by_title(
+    submenu_obj = await crud_core.get_object_by_title(
         db=db, title=data.title, model=models.SubMenu
     )
     if submenu_obj:
@@ -69,9 +68,9 @@ async def create_submenu(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Submenu already exist",
         )
-    data = data.dict()
+    data = data.model_dump()
     data['menu_id'] = menu_id
-    created_submenu = await crude_core.create_object(
+    created_submenu = await crud_core.create_object(
         db=db, data=data, model=models.SubMenu
     )
     return created_submenu
@@ -79,7 +78,7 @@ async def create_submenu(
 
 @router.patch(
     '/{submenu_id}',
-    response_model=schemas.SubMenu,
+    response_model=schemas.SubMenuCreationOutput,
     status_code=status.HTTP_200_OK
 )
 async def update_submenu(
@@ -89,15 +88,15 @@ async def update_submenu(
             db: AsyncSession = Depends(get_async_session)
         ):
     """Update SubMenu."""
-    submenu = await crud.get_submenu(
-        db=db, menu_uid=menu_id, submenu_uid=submenu_id
+    submenu = await crud_core.get_object(
+        db=db, uid=submenu_id, model=models.SubMenu
     )
     if submenu is None:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="Submenu not found",
         )
-    submenu_new = await crude_core.update_object(
+    submenu_new = await crud_core.update_object(
         db=db, updated_data=data, obj=submenu,
     )
     return submenu_new
@@ -109,13 +108,13 @@ async def delete_submenu(
             submenu_id: uuid.UUID,
             db: AsyncSession = Depends(get_async_session)
         ):
-    submenu = await crud.get_submenu(
-        db=db, menu_uid=menu_id, submenu_uid=submenu_id
+    submenu = await crud_core.get_object(
+        db=db, uid=submenu_id, model=models.SubMenu
     )
     if submenu is None:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="submenu not found",
         )
-    await crude_core.delete_object(db=db, obj=submenu)
+    await crud_core.delete_object(db=db, obj=submenu)
     return None

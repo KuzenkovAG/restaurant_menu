@@ -65,7 +65,7 @@ async def create_dish(
             db: AsyncSession = Depends(get_async_session)
         ):
     """Create dish."""
-    data = data.dict()
+    data = data.model_dump()
     data['submenu_id'] = submenu_id
     created_dish = await crud_core.create_object(
         db=db, data=data, model=models.Dish
@@ -86,8 +86,8 @@ async def update_dish(
             db: AsyncSession = Depends(get_async_session)
         ):
     """update dish."""
-    dish = await crud.get_dish(
-        db=db, dish_uid=dish_id, submenu_uid=submenu_id
+    dish = await crud_core.get_object(
+        db=db, uid=dish_id, model=models.Dish
     )
     if dish is None:
         raise HTTPException(
@@ -110,8 +110,8 @@ async def delete_dish(
             submenu_id: uuid.UUID,
             db: AsyncSession = Depends(get_async_session)
         ):
-    dish = await crud.get_dish(
-        db=db, dish_uid=dish_id, submenu_uid=submenu_id
+    dish = await crud_core.get_object(
+        db=db, uid=dish_id, model=models.Dish
     )
     if dish is None:
         raise HTTPException(

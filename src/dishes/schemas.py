@@ -2,11 +2,12 @@ import abc
 import uuid
 from decimal import Decimal
 
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 
 
 class DishBaseModel(BaseModel, abc.ABC):
     """Base schema for Dish."""
+    model_config = ConfigDict(from_attributes=True)
     title: str
     description: str
     price: str

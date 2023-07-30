@@ -1,14 +1,12 @@
 import abc
 import uuid
-from typing import List
 
-from pydantic import BaseModel
-
-from src.submenus.schemas import SubMenu
+from pydantic import BaseModel, ConfigDict
 
 
 class MenuBaseModel(BaseModel, abc.ABC):
     """Base schema for Dish."""
+    model_config = ConfigDict(from_attributes=True)
     title: str
     description: str
 
@@ -16,12 +14,8 @@ class MenuBaseModel(BaseModel, abc.ABC):
 class Menu(MenuBaseModel):
     """Menu schema."""
     id: uuid.UUID
-    submenus: List[SubMenu] = []
     submenus_count: int
     dishes_count: int
-
-    class Config:
-        from_attributes = True
 
 
 class MenuCreateInput(MenuBaseModel):

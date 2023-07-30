@@ -2,7 +2,7 @@ version: '3.3'
 # Для разработки и отладки
 services:
   db:
-    image: postgres:13.10
+    image: postgres:15.1-alpine
     environment:
       - POSTGRES_USER=fast_api_user
       - POSTGRES_PASSWORD=pass
@@ -19,21 +19,3 @@ services:
       - PGADMIN_DEFAULT_PASSWORD=admin
     ports:
       - "82:80"
-
-  web:
-    build: .
-    environment:
-      - POSTGRES_USER=fast_api_user
-      - POSTGRES_PASSWORD=pass
-      - POSTGRES_DB=postgres
-      - DB_HOST=localhost
-      - DB_PORT=5432
-    command:
-      sh -c "alembic upgrade head &&
-             uvicorn src.main:app --reload --host 0.0.0.0 --port 8000"
-    volumes:
-      - .:/apps/.
-    ports:
-     - "8000:8000"
-    depends_on:
-      - db

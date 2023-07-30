@@ -10,6 +10,9 @@ from src.dishes.models import Dish
 class SubMenu(Base):
     """Model for SubMenus."""
     __tablename__ = 'submenus'
+    __mapper_args__ = {
+        'confirm_deleted_rows': False
+    }
 
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     title = Column(String(length=128), unique=True, nullable=False)
@@ -21,10 +24,5 @@ class SubMenu(Base):
         "Dish",
         back_populates='submenu',
         cascade='all, delete',
-        lazy='selectin',
-    )
-    dishes_count = column_property(
-        select(func.count(Dish.id))
-        .where(Dish.submenu_id == id)
-        .scalar_subquery(),
+        lazy='subquery',
     )

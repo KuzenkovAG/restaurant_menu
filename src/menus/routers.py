@@ -51,28 +51,28 @@ async def get_menu(
     status_code=status.HTTP_201_CREATED
 )
 async def create_menu(
-            menu: schemas.MenuCreateInput,
+            data: schemas.MenuCreateInput,
             db: AsyncSession = Depends(get_async_session)
         ):
     """Create menu."""
-    menu_obj = await crud_core.get_object_by_title(
-        db=db, title=menu.title, model=models.Menu
+    existed_menu = await crud_core.get_object_by_title(
+        db=db, title=data.title, model=models.Menu
     )
-    if menu_obj:
+    if existed_menu:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Menu already exist",
         )
-    menu = menu.dict()
-    created_menu = await crud_core.create_object(
-        db=db, data=menu, model=models.Menu
+    data = data.model_dump()
+    menu = await crud_core.create_object(
+        db=db, data=data, model=models.Menu
     )
-    return created_menu
+    return menu
 
 
 @router.patch(
     '/{menu_id}',
-    response_model=schemas.Menu,
+    response_model=schemas.MenuCreateOutput,
     status_code=status.HTTP_200_OK
 )
 async def update_menu(
@@ -81,16 +81,20 @@ async def update_menu(
             db: AsyncSession = Depends(get_async_session)
         ):
     """Update menu."""
-    menu = await crud.get_menu(db=db, uid=menu_id)
-    if menu is None:
+    existed_menu = await crud_core.get_object(
+        db=db,
+        model=models.Menu,
+        uid=menu_id
+    )
+    if existed_menu is None:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="Menu not found",
         )
-    menu_new = await crud_core.update_object(
-        db=db, obj=menu, updated_data=data
+    menu = await crud_core.update_object(
+        db=db, obj=existed_menu, updated_data=data
     )
-    return menu_new
+    return menu
 
 
 @router.delete(
@@ -102,7 +106,7 @@ async def delete_menu(
             db: AsyncSession = Depends(get_async_session)
         ):
     """Delete menu."""
-    menu = await crud.get_menu(db=db, uid=menu_id)
+    menu = await crud_core.get_object(db=db, uid=menu_id, model=models.Menu)
     if menu is None:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,

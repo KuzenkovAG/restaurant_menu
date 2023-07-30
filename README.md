@@ -1,5 +1,6 @@
 # REST API for restaurant menu
 
+
 ## Installation
 
 Clone repository
@@ -14,9 +15,14 @@ Create .env and **fill** like .env-example
 ```sh
 touch .env
 ```
-Run in docker container
+
+Run App in docker container
 ```sh
 docker compose -f docker-compose.production.yml up --build -d
+```
+### Test run
+```sh
+docker compose -f docker-compose.testing.yml up
 ```
 
 ## Usage

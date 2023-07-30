@@ -9,7 +9,9 @@ from src.database import Base
 class Dish(Base):
     """Model for dishes."""
     __tablename__ = 'dishes'
-
+    __mapper_args__ = {
+        'confirm_deleted_rows': False
+    }
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     title = Column(String(length=128))
     description = Column(Text)
