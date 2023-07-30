@@ -5,5 +5,6 @@ venv/
 .idea/
 .git/
 __pycache__/
+.pytest_cache/
 pg_data/
 pg_data_test/

@@ -3,24 +3,25 @@
 
 ## Installation
 
-Clone repository
+1. Clone repository
 ```sh
 git clone git@github.com:KuzenkovAG/restaurant_menu.git
 ```
-Go to folder
+2. Go to folder
 ```sh
 cd restaurant_menu/
 ```
-Create .env and **fill** like .env-example
+3. Create .env and **fill** like .env-example
 ```sh
 touch .env
 ```
-
-Run App in docker container
+4. Run app
 ```sh
 docker compose -f docker-compose.production.yml up --build -d
 ```
 ### Test run
+1. Create .env
+2. Run command
 ```sh
 docker compose -f docker-compose.testing.yml up
 ```
