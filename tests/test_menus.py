@@ -1,5 +1,3 @@
-from typing import List
-
 from fastapi import status
 from httpx import AsyncClient
 
@@ -94,14 +92,14 @@ class TestCrudMenu:
         }
         url = f"/api/v1/menus/{menu.id}"
         response = await async_client.patch(url, json=new_data)
-        response_menu = response.json()
+        data = response.json()
         assert response.status_code == status.HTTP_200_OK, (
             'Некорректный статус код'
         )
-        assert response_menu.get('title') == new_data.get('title'), (
+        assert data.get('title') == new_data.get('title'), (
             'Поле title отличается'
         )
-        assert response_menu.get('description') == new_data.get('description'), (
+        assert data.get('description') == new_data.get('description'), (
             'Поле description отличается'
         )
         async with async_test_session_maker() as db:

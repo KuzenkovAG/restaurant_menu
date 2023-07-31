@@ -1,10 +1,9 @@
 import uuid
 
-from sqlalchemy import Column, ForeignKey, func, select, String, Text, UUID
-from sqlalchemy.orm import column_property, relationship
+from sqlalchemy import Column, ForeignKey, String, Text, UUID
+from sqlalchemy.orm import relationship
 
 from src.database import Base
-from src.dishes.models import Dish
 
 
 class SubMenu(Base):
