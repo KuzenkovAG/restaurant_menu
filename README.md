@@ -11,9 +11,9 @@ git clone git@github.com:KuzenkovAG/restaurant_menu.git
 ```sh
 cd restaurant_menu/
 ```
-3. Create .env and **fill** like .env-example
+3. Create .env
 ```sh
-touch .env
+cat .env-example > .env
 ```
 4. Run app
 ```sh
@@ -21,6 +21,9 @@ docker compose -f docker-compose.production.yml up --build -d
 ```
 ### Test run
 1. Create .env
+```sh
+cat .env-example > .env
+```
 2. Run command
 ```sh
 docker compose -f docker-compose.testing.yml up
@@ -45,7 +48,6 @@ GET: */api/v1/menus/*
     "title": "string",
     "description": "string",
     "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
-    "submenus": [],
     "submenus_count": 0,
     "dishs_count": 0
   }
@@ -59,7 +61,6 @@ GET: */api/v1/menus/{menu_id}*
   "title": "string",
   "description": "string",
   "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
-  "submenus": [],
   "submenus_count": 0,
   "dishs_count": 0
 }
@@ -112,7 +113,6 @@ GET: */api/v1/menus/{menu_id}/submenus/*
     "description": "string",
     "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
     "menu_id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
-    "dishes": [],
     "dishes_count": 0
   }
 ]
@@ -126,7 +126,6 @@ GET: */api/v1/menus/{menu_id}/submenus/{submenu_id}*
   "description": "string",
   "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
   "menu_id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
-  "dishes": [],
   "dishes_count": 0
 }
 ```
@@ -164,7 +163,6 @@ PATCH: */api/v1/menus/{menu_id}/submenus/{submenu_id}*
   "description": "string",
   "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
   "menu_id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
-  "dishes": [],
   "dishes_count": 0
 }
 ```

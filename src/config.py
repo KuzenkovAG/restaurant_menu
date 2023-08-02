@@ -5,24 +5,24 @@ class Settings(BaseSettings):
     """Settings."""
     model_config = SettingsConfigDict(env_file='.env')
 
-    POSTGRES_USER: str
-    POSTGRES_PASSWORD: str
-    POSTGRES_DB: str
+    DB_USER: str
+    DB_PASS: str
+    DB_NAME: str
     DB_HOST: str
     DB_PORT: str
 
     DB_USER_TEST: str
     DB_PASS_TEST: str
+    DB_NAME_TEST: str
     DB_HOST_TEST: str
     DB_PORT_TEST: str
-    DB_NAME_TEST: str
 
     @property
     def DB_URL(self):
         return (
-            f'postgresql+asyncpg://{self.POSTGRES_USER}:'
-            f'{self.POSTGRES_PASSWORD}@{self.DB_HOST}:{self.DB_PORT}'
-            f'/{self.POSTGRES_DB}'
+            f'postgresql+asyncpg://{self.DB_USER}:'
+            f'{self.DB_PASS}@{self.DB_HOST}:{self.DB_PORT}'
+            f'/{self.DB_NAME}'
         )
 
     @property

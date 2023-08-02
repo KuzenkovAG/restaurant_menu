@@ -4,11 +4,15 @@ services:
   test_db:
     image: postgres:15.1-alpine
     environment:
-      - POSTGRES_USER=fast_api_user
-      - POSTGRES_PASSWORD=pass
-      - POSTGRES_DB=postgres_test
+      - POSTGRES_USER=${DB_USER_TEST}
+      - POSTGRES_PASSWORD=${DB_PASS_TEST}
+      - POSTGRES_DB=${DB_NAME_TEST}
+    ports:
+     - "5433:5432"
+    env_file:
+      - .env
     healthcheck:
-      test: [ "CMD-SHELL", "pg_isready -d ${POSTGRES_DB} -U ${POSTGRES_USER}" ]
+      test: [ "CMD-SHELL", "pg_isready -d ${DB_NAME_TEST} -U ${DB_USER_TEST}" ]
       interval: 5s
       timeout: 10s
       retries: 10
@@ -20,11 +24,7 @@ services:
     env_file:
       - .env
     command:
-      sh -c "pytest -v"
-    volumes:
-      - .:/apps/.
-    ports:
-     - "8000:8000"
+      sh -c "pytest -vv"
     depends_on:
       test_db:
         condition: service_healthy
