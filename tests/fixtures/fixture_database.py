@@ -7,7 +7,7 @@ from httpx import AsyncClient
 
 from src.database import Base
 from src.main import app
-from src.redis import redis
+from src.redis_conf import redis
 from tests.conftest import engine_test
 
 
@@ -20,7 +20,7 @@ async def _prepare_database() -> AsyncGenerator:
         await conn.run_sync(Base.metadata.drop_all)
 
 
-@pytest.fixture(autouse=True, scope="session")
+@pytest.fixture(autouse=True, scope='session')
 async def clear_cache():
     """Clear cache before and after tests."""
     await redis.flushall()
@@ -28,7 +28,7 @@ async def clear_cache():
     await redis.flushall()
 
 
-@pytest.fixture(scope="session")
+@pytest.fixture(scope='session')
 def event_loop() -> Generator[asyncio.AbstractEventLoop, Any, None]:
     """Create an instance of the default event loop for each test case."""
     loop = asyncio.get_event_loop_policy().new_event_loop()
@@ -36,7 +36,7 @@ def event_loop() -> Generator[asyncio.AbstractEventLoop, Any, None]:
     loop.close()
 
 
-@pytest.fixture(scope="session")
+@pytest.fixture(scope='session')
 async def async_client() -> AsyncGenerator[AsyncClient, None]:
-    async with AsyncClient(app=app, base_url="http://test") as ac:
+    async with AsyncClient(app=app, base_url='http://test') as ac:
         yield ac

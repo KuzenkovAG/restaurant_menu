@@ -49,21 +49,3 @@ services:
       retries: 10
     volumes:
       - ./data/redis_cache/:/data
-
-  pg_admin:
-    image: dpage/pgadmin4
-    environment:
-      - PGADMIN_DEFAULT_EMAIL=admin@mail.com
-      - PGADMIN_DEFAULT_PASSWORD=admin
-    ports:
-      - "82:80"
-
-  redis-commander:
-    container_name: redis-commander
-    hostname: redis-commander
-    image: rediscommander/redis-commander:latest
-    restart: always
-    environment:
-    - REDIS_HOSTS=redis:6379
-    ports:
-    - "8081:8081"
