@@ -22,7 +22,7 @@ class SubMenu(SubMenuBaseModel):
 
 class SubMenuCreationInput(SubMenuBaseModel):
     """Input schema for creation SubMenu."""
-    pass
+    ...
 
 
 class SubMenuCreationOutput(SubMenuBaseModel):

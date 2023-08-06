@@ -1,16 +1,18 @@
 import asyncio
-from typing import AsyncGenerator
+from collections.abc import AsyncGenerator, Generator
+from typing import Any
 
 import pytest
 from httpx import AsyncClient
 
 from src.database import Base
 from src.main import app
+from src.redis import redis
 from tests.conftest import engine_test
 
 
 @pytest.fixture(autouse=True)
-async def prepare_database():
+async def _prepare_database() -> AsyncGenerator:
     async with engine_test.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
     yield
@@ -18,8 +20,16 @@ async def prepare_database():
         await conn.run_sync(Base.metadata.drop_all)
 
 
+@pytest.fixture(autouse=True, scope="session")
+async def clear_cache():
+    """Clear cache before and after tests."""
+    await redis.flushall()
+    yield None
+    await redis.flushall()
+
+
 @pytest.fixture(scope="session")
-def event_loop(request):
+def event_loop() -> Generator[asyncio.AbstractEventLoop, Any, None]:
     """Create an instance of the default event loop for each test case."""
     loop = asyncio.get_event_loop_policy().new_event_loop()
     yield loop

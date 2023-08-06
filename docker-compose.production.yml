@@ -17,7 +17,7 @@ services:
       timeout: 10s
       retries: 10
     volumes:
-      - ./pg_data/:/var/lib/postgresql/data
+      - ./data/pg_data/:/var/lib/postgresql/data
 
   web:
     build: .
@@ -31,3 +31,39 @@ services:
     depends_on:
       db:
         condition: service_healthy
+      redis:
+        condition: service_healthy
+
+  redis:
+    image: redis:6.2
+    restart: always
+    env_file:
+      - .env
+    ports:
+      - "${REDIS_PORT}:6379"
+    command: bash -c "redis-server --requirepass ${REDIS_PASS}"
+    healthcheck:
+      test: [ "CMD", "redis-cli", "--raw", "incr", "ping" ]
+      interval: 5s
+      timeout: 10s
+      retries: 10
+    volumes:
+      - ./data/redis_cache/:/data
+
+  pg_admin:
+    image: dpage/pgadmin4
+    environment:
+      - PGADMIN_DEFAULT_EMAIL=admin@mail.com
+      - PGADMIN_DEFAULT_PASSWORD=admin
+    ports:
+      - "82:80"
+
+  redis-commander:
+    container_name: redis-commander
+    hostname: redis-commander
+    image: rediscommander/redis-commander:latest
+    restart: always
+    environment:
+    - REDIS_HOSTS=redis:6379
+    ports:
+    - "8081:8081"

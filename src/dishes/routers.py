@@ -1,122 +1,75 @@
 import uuid
-from typing import List
 
-from fastapi import APIRouter, Depends, HTTPException, status
-from sqlalchemy.ext.asyncio import AsyncSession
+from fastapi import APIRouter, Depends, status
 
-from src.core import crud as crud_core
-from src.database import get_async_session
-
-from . import crud, models, schemas
+from . import schemas
+from .services import DishService
 
 router = APIRouter(
-    prefix='/menus/{menu_id}/submenus/{submenu_id}/dishes',
-    tags=['Dish']
+    prefix="/menus/{menu_id}/submenus/{submenu_id}/dishes",
+    tags=["Dish"],
 )
 
 
-@router.get(
-    '/',
-    response_model=List[schemas.Dish],
-    status_code=status.HTTP_200_OK
-)
+@router.get("/", response_model=list[schemas.Dish], status_code=status.HTTP_200_OK)
 async def get_dishes(
             menu_id: uuid.UUID,
             submenu_id: uuid.UUID,
-            db: AsyncSession = Depends(get_async_session),
-        ):
-    """Get list of Dishes."""
-    submenus = await crud.get_dishes(db=db, submenu_id=submenu_id)
-    return submenus
+            dishes: DishService = Depends(),
+        ) -> list[schemas.Dish]:
+    """Get list of dishes."""
+    return await dishes.get_all(submenu_id=submenu_id)
 
 
-@router.get(
-    '/{dish_id}',
-    response_model=schemas.Dish,
-    status_code=status.HTTP_200_OK
-)
+@router.get("/{dish_id}", response_model=schemas.Dish, status_code=status.HTTP_200_OK)
 async def get_dish(
             dish_id: uuid.UUID,
             menu_id: uuid.UUID,
             submenu_id: uuid.UUID,
-            db: AsyncSession = Depends(get_async_session)
-        ):
+            dishes: DishService = Depends(),
+        ) -> schemas.Dish:
     """Get dish by id."""
-    menu = await crud.get_dish(
-        db=db, dish_uid=dish_id, submenu_uid=submenu_id
-    )
-    if menu is None:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="dish not found",
-        )
-    return menu
+    return await dishes.get(id=dish_id, submenu_id=submenu_id)
 
 
-@router.post(
-    '/',
-    response_model=schemas.Dish,
-    status_code=status.HTTP_201_CREATED
-)
+@router.post("/", response_model=schemas.CreateDishOutput, status_code=status.HTTP_201_CREATED)
 async def create_dish(
             menu_id: uuid.UUID,
             submenu_id: uuid.UUID,
             data: schemas.CreateDish,
-            db: AsyncSession = Depends(get_async_session)
-        ):
+            dishes: DishService = Depends(),
+        ) -> schemas.CreateDishOutput:
     """Create dish."""
-    data = data.model_dump()
-    data['submenu_id'] = submenu_id
-    created_dish = await crud_core.create_object(
-        db=db, data=data, model=models.Dish
-    )
-    return created_dish
+    return await dishes.create(menu_id=menu_id, submenu_id=submenu_id, data=data)
 
 
 @router.patch(
-    '/{dish_id}',
-    response_model=schemas.Dish,
-    status_code=status.HTTP_200_OK
+    "/{dish_id}",
+    response_model=schemas.CreateDishOutput,
+    status_code=status.HTTP_200_OK,
 )
 async def update_dish(
             data: schemas.CreateDish,
             dish_id: uuid.UUID,
             menu_id: uuid.UUID,
             submenu_id: uuid.UUID,
-            db: AsyncSession = Depends(get_async_session)
-        ):
+            dishes: DishService = Depends(),
+        ) -> schemas.CreateDishOutput:
     """update dish."""
-    dish = await crud_core.get_object(
-        db=db, uid=dish_id, model=models.Dish
+    return await dishes.update(
+        menu_id=menu_id,
+        submenu_id=submenu_id,
+        dish_id=dish_id,
+        data=data,
     )
-    if dish is None:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Dish not found",
-        )
-    dish_updated = await crud_core.update_object(
-        db=db, updated_data=data, obj=dish
-    )
-    return dish_updated
 
 
-@router.delete(
-    '/{dish_id}',
-    status_code=status.HTTP_200_OK
-)
+@router.delete("/{dish_id}", status_code=status.HTTP_200_OK)
 async def delete_dish(
             dish_id: uuid.UUID,
             menu_id: uuid.UUID,
             submenu_id: uuid.UUID,
-            db: AsyncSession = Depends(get_async_session)
-        ):
-    dish = await crud_core.get_object(
-        db=db, uid=dish_id, model=models.Dish
-    )
-    if dish is None:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="dish not found",
-        )
-    await crud_core.delete_object(db=db, obj=dish)
-    return None
+            dishes: DishService = Depends(),
+        ) -> None:
+    """Delete dish."""
+    await dishes.delete(menu_id=menu_id, submenu_id=submenu_id, dish_id=dish_id)

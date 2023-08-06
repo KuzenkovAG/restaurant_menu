@@ -1,6 +1,7 @@
 import abc
 import uuid
 from decimal import Decimal
+from typing import Union
 
 from pydantic import BaseModel, ConfigDict
 
@@ -10,13 +11,14 @@ class DishBaseModel(BaseModel, abc.ABC):
     model_config = ConfigDict(from_attributes=True)
     title: str
     description: str
-    price: str
+    price: Decimal
 
 
 class Dish(DishBaseModel):
     """Dish model schema."""
-    id: uuid.UUID
+    id: Union[uuid.UUID, str]
     price: Decimal
+    submenu_id: Union[uuid.UUID, str]
 
 
 class CreateDish(DishBaseModel):
@@ -25,5 +27,5 @@ class CreateDish(DishBaseModel):
 
 
 class CreateDishOutput(DishBaseModel):
-    """Input schema for creation Dish."""
-    price: Decimal
+    """Output schema for creation Dish."""
+    id: Union[uuid.UUID, str]

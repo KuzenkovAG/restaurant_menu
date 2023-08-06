@@ -1,12 +1,14 @@
+import uuid
+
 from fastapi import status
 from httpx import AsyncClient
 
-from src.core import crud as crud_core
 from src.dishes.models import Dish
-from src.dishes import crud as crud_dish
+from src.main import app
 from src.menus.models import Menu
 from src.submenus.models import SubMenu
-from .conftest import async_test_session_maker
+from tests.conftest import async_test_session_maker
+from tests.utils import get_object
 
 
 class TestCrudDishes:
@@ -20,27 +22,27 @@ class TestCrudDishes:
             ):
         """Тест - получение списка блюд."""
         async with async_test_session_maker() as db:
-            dishes = await crud_core.get_objects(db=db, model=Dish)
-        url = f'/api/v1/menus/{menu.id}/submenus/{submenu.id}/dishes/'
+            dishes = await get_object(
+                db=db, model=Dish, many=True, submenu_id=submenu.id,
+            )
+        url = app.url_path_for(
+            "get_dishes",
+            menu_id=submenu.menu_id,
+            submenu_id=submenu.id,
+        )
         response = await async_client.get(url)
-        assert response.status_code == status.HTTP_200_OK, (
-            'Код ответа не корректный'
-        )
-        assert len(response.json()) == len(dishes), (
-            'Выведено неверное количество блюд'
-        )
+        assert response.status_code == status.HTTP_200_OK, "Код ответа не корректный"
+        assert len(response.json()) == len(dishes), "Выведено неверное количество блюд"
         response_data = response.json()[0]
-        assert response_data.get('id') is not None, (
-            'У меню отсутствует поле id'
+        assert response_data.get("id") == str(dish.id), "У блюда некорректное поле id"
+        assert response_data.get("title") == dish.title, (
+            "У блюда некорректное поле title"
         )
-        assert response_data.get('title') is not None, (
-            'У меню отсутствует поле title'
+        assert response_data.get("description") == dish.description, (
+            "У блюда некорректное поле description"
         )
-        assert response_data.get('description') is not None, (
-            'У меню отсутствует поле description'
-        )
-        assert response_data.get('price') is not None, (
-            'У меню отсутствует поле price'
+        assert response_data.get("price") == str(dish.price), (
+            "У блюда некорректное поле price"
         )
 
     async def test_get_single_dish(
@@ -48,22 +50,43 @@ class TestCrudDishes:
                 async_client: AsyncClient,
                 menu: Menu,
                 submenu: SubMenu,
-                dish: Dish
+                dish: Dish,
             ):
-        """Тест - получение одиночного блюда по id."""
-        url = f"/api/v1/menus/{menu.id}/submenus/{submenu.id}/dishes/{dish.id}"
+        """Тест - получение блюда по id."""
+        url = app.url_path_for(
+            "get_dish",
+            menu_id=submenu.menu_id,
+            submenu_id=submenu.id,
+            dish_id=dish.id,
+        )
         response = await async_client.get(url)
-        assert response.status_code == status.HTTP_200_OK, (
-            'Статус код некорректный'
-        )
+        assert response.status_code == status.HTTP_200_OK, "Статус код некорректный"
         response_data = response.json()
-        assert response_data.get('id') == str(dish.id), 'Id отличается'
-        assert response_data.get('title') == dish.title, 'Title отличается'
-        assert response_data.get('description') == dish.description, (
-            'Title отличается'
+        assert response_data.get("id") == str(dish.id), "Id отличается"
+        assert response_data.get("title") == dish.title, "Title отличается"
+        assert response_data.get("description") == dish.description, (
+            "Description отличается"
         )
-        assert response_data.get('price') == str(dish.price), (
-            'Price отличается'
+        assert response_data.get("price") == str(dish.price), "Price отличается"
+
+    async def test_get_non_existed_dish(
+                self,
+                async_client: AsyncClient,
+                menu: Menu,
+                submenu: SubMenu,
+                dish: Dish,
+            ):
+        """Тест - получение несуществующего блюда по id."""
+        non_existed_id = uuid.uuid4()
+        url = app.url_path_for(
+            "get_dish",
+            menu_id=submenu.menu_id,
+            submenu_id=submenu.id,
+            dish_id=non_existed_id,
+        )
+        response = await async_client.get(url)
+        assert (response.status_code == status.HTTP_404_NOT_FOUND), (
+            "Если блюда не существует, должно отображать ошибку 404"
         )
 
     async def test_create_dish(
@@ -73,38 +96,36 @@ class TestCrudDishes:
                 submenu: SubMenu,
             ):
         """Тест - создание блюда."""
-        async with async_test_session_maker() as db:
-            dishes_count_before = await crud_core.count_objects(
-                db=db,
-                model=Dish
-            )
         dish_data = {
             "title": "Новое блюдо",
             "description": "Описание нового блюда",
-            "price": "1.23"
+            "price": "1.23",
         }
-        url = f"/api/v1/menus/{menu.id}/submenus/{submenu.id}/dishes/"
+        url = app.url_path_for(
+            "create_dish",
+            menu_id=menu.id,
+            submenu_id=submenu.id,
+        )
         response = await async_client.post(url, json=dish_data)
-        async with async_test_session_maker() as db:
-            dishes_count_after = await crud_core.count_objects(
-                db=db,
-                model=Dish
-            )
         assert response.status_code == status.HTTP_201_CREATED, (
-            'Некорректный статус код'
+            "Некорректный статус код"
         )
         data = response.json()
-        assert data.get('title') == dish_data.get('title'), (
-            'Поле title отличается'
+        assert data.get("title") == dish_data.get("title"), "Поле title отличается"
+        assert data.get("description") == dish_data.get("description"), (
+            "Поле description отличается"
         )
-        assert data.get('description') == dish_data.get('description'), (
-            'Поле description отличается'
+        assert data.get("price") == dish_data.get("price"), (
+            "Поле description отличается"
         )
-        assert data.get('price') == dish_data.get('price'), (
-            'Поле description отличается'
+        async with async_test_session_maker() as db:
+            created_dish = await get_object(db=db, model=Dish, id=data.get("id"))
+        assert created_dish.title == dish_data.get("title"), "Поле title отличается"
+        assert created_dish.description == dish_data.get("description"), (
+            "Поле description отличается"
         )
-        assert dishes_count_before + 1 == dishes_count_after, (
-            'Количество меню не изменилось'
+        assert str(created_dish.price) == dish_data.get("price"), (
+            "Поле description отличается"
         )
 
     async def test_update_dish(
@@ -112,77 +133,111 @@ class TestCrudDishes:
                 async_client: AsyncClient,
                 menu: Menu,
                 submenu: SubMenu,
-                dish: Dish
+                dish: Dish,
             ):
         """Тест - обновление подменю."""
         new_data = {
             "title": "Новый заголовок",
             "description": "Новое описание",
-            "price": "3.21"
+            "price": "3.21",
         }
-        url = f"/api/v1/menus/{menu.id}/submenus/{submenu.id}/dishes/{dish.id}"
+        url = app.url_path_for(
+            "update_dish",
+            menu_id=submenu.menu_id,
+            submenu_id=submenu.id,
+            dish_id=dish.id,
+        )
         response = await async_client.patch(url, json=new_data)
         data = response.json()
-        assert response.status_code == status.HTTP_200_OK, (
-            'Некорректный статус код'
+        assert response.status_code == status.HTTP_200_OK, "Некорректный статус код"
+        assert data.get("title") == new_data.get("title"), "Поле title отличается"
+        assert data.get("description") == new_data.get("description"), (
+            "Поле description отличается"
         )
-        assert data.get('title') == new_data.get('title'), (
-            'Поле title отличается'
-        )
-        assert data.get('description') == new_data.get('description'), (
-            'Поле description отличается'
-        )
-        assert data.get('price') == new_data.get('price'), (
-            'Поле price отличается'
-        )
+        assert data.get("price") == new_data.get("price"), "Поле price отличается"
         async with async_test_session_maker() as db:
-            updated_dish = await crud_dish.get_dish(
+            updated_dish = await get_object(
                 db=db,
-                dish_uid=dish.id,
-                submenu_uid=submenu.id
+                model=Dish,
+                id=dish.id,
+                submenu_id=submenu.id,
             )
-        assert updated_dish.title == new_data.get('title'), (
-            'Поле title не изменилось в базе'
+        assert updated_dish.title == new_data.get("title"), (
+            "Поле title не изменилось в базе"
         )
-        assert updated_dish.description == new_data.get('description'), (
-            'Поле description не изменилось в базе'
+        assert updated_dish.description == new_data.get("description"), (
+            "Поле description не изменилось в базе"
         )
-        assert str(updated_dish.price) == new_data.get('price'), (
-            'Поле price не изменилось в базе'
+        assert str(updated_dish.price) == new_data.get("price"), (
+            "Поле price не изменилось в базе"
         )
+
+    async def test_update_non_existed_dish(
+                self,
+                async_client: AsyncClient,
+                menu: Menu,
+                submenu: SubMenu,
+                dish: Dish,
+            ):
+        """Тест - обновление несуществующего блюда по id."""
+        non_existed_id = uuid.uuid4()
+        url = app.url_path_for(
+            "update_dish",
+            menu_id=submenu.menu_id,
+            submenu_id=submenu.id,
+            dish_id=non_existed_id,
+        )
+        data = {
+            "title": "Новый заголовок",
+            "description": "Новое описание",
+            "price": "3.21",
+        }
+        response = await async_client.patch(url, json=data)
+        assert (
+            response.status_code == status.HTTP_404_NOT_FOUND
+        ), "Если блюда не существует, должно отображать ошибку 404"
 
     async def test_delete_dish(
                 self,
                 async_client: AsyncClient,
                 menu: Menu,
                 submenu: SubMenu,
-                dish: Dish
+                dish: Dish,
             ):
         """Тест - удалить блюдо."""
-        async with async_test_session_maker() as db:
-            dishes_count_before = await crud_core.count_objects(
-                db=db,
-                model=Dish
-            )
-        url = f"/api/v1/menus/{menu.id}/submenus/{submenu.id}/dishes/{dish.id}"
+        url = app.url_path_for(
+            "delete_dish",
+            menu_id=submenu.menu_id,
+            submenu_id=submenu.id,
+            dish_id=dish.id,
+        )
         response = await async_client.delete(url)
-        assert response.status_code == status.HTTP_200_OK, (
-            'Некорректный статус код'
-        )
+        assert response.status_code == status.HTTP_200_OK, "Некорректный статус код"
         async with async_test_session_maker() as db:
-            deleted_dish = await crud_dish.get_dish(
+            deleted_dish = await get_object(
                 db=db,
-                dish_uid=dish.id,
-                submenu_uid=submenu.id
+                model=Dish,
+                id=dish.id,
+                submenu_id=submenu.id,
             )
-        assert deleted_dish is None, (
-            'Блюдо не удалилось из базы'
+        assert deleted_dish is None, "Блюдо не удалилось из базы"
+
+    async def test_delete_non_existed_dish(
+                self,
+                async_client: AsyncClient,
+                menu: Menu,
+                submenu: SubMenu,
+                dish: Dish,
+            ):
+        """Тест - удаления несуществующего блюда по id."""
+        non_existed_id = uuid.uuid4()
+        url = app.url_path_for(
+            "delete_dish",
+            menu_id=submenu.menu_id,
+            submenu_id=submenu.id,
+            dish_id=non_existed_id,
         )
-        async with async_test_session_maker() as db:
-            submenus_count_after = await crud_core.count_objects(
-                db=db,
-                model=Dish
-            )
-        assert dishes_count_before == submenus_count_after + 1, (
-            'Количество блюд в базе не изменилось'
+        response = await async_client.delete(url)
+        assert response.status_code == status.HTTP_404_NOT_FOUND, (
+            "Если блюда не существует, должно отображать ошибку 404"
         )

@@ -17,7 +17,7 @@ services:
       timeout: 10s
       retries: 10
     volumes:
-      - ./pg_data_test/:/var/lib/postgresql/data
+      - ./data/pg_data_test/:/var/lib/postgresql/data
 
   test_web:
     build: .
@@ -28,3 +28,19 @@ services:
     depends_on:
       test_db:
         condition: service_healthy
+
+  redis:
+    image: redis:6.2
+    restart: always
+    env_file:
+      - .env
+    ports:
+      - "${REDIS_PORT}:6379"
+    command: bash -c "redis-server --requirepass ${REDIS_PASS}"
+    healthcheck:
+      test: [ "CMD", "redis-cli", "--raw", "incr", "ping" ]
+      interval: 5s
+      timeout: 10s
+      retries: 10
+    volumes:
+      - ./data/redis/:/data
