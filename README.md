@@ -29,6 +29,28 @@ cat .env-example > .env
 docker compose -f docker-compose.testing.yml up --build
 ```
 
+### Install pre-commit hooks (windows)
+1. Install venv
+```sh
+py -3.10 -m venv venv
+```
+2. Activate it
+```sh
+source venv/Scripts/activate
+```
+3. Install package
+```sh
+pip install pre-commit
+```
+4. Install pre-commit hooks
+```sh
+pre-commit install
+```
+5. Use it.
+```sh
+pre-commit run --all-files
+```
+
 ## Usage
 
 Using swagger for auto documentation.
