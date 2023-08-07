@@ -1,4 +1,7 @@
+from collections.abc import AsyncIterator
+
 import aioredis
+from aioredis import Redis
 
 from src.config import settings
 
@@ -10,5 +13,5 @@ redis = aioredis.from_url(
 )
 
 
-async def get_redis_connection():
+async def get_redis_connection() -> AsyncIterator[Redis]:
     yield redis

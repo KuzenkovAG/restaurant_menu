@@ -23,7 +23,7 @@ class Settings(BaseSettings):
     REDIS_PORT: int | None = None
 
     @property
-    def db_url(self):
+    def db_url(self) -> str:
         """Product db url."""
         return (
             f'postgresql+asyncpg://{self.DB_USER}:'
@@ -32,7 +32,7 @@ class Settings(BaseSettings):
         )
 
     @property
-    def db_test_url(self):
+    def db_test_url(self) -> str:
         """Test db url."""
         return (
             f'postgresql+asyncpg://{self.DB_USER_TEST}:{self.DB_PASS_TEST}@'
@@ -40,7 +40,7 @@ class Settings(BaseSettings):
         )
 
     @property
-    def redis_url(self):
+    def redis_url(self) -> str:
         """Redis url."""
         return f'redis://{self.REDIS_HOST}:{self.REDIS_PORT}'
 
