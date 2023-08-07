@@ -1,5 +1,4 @@
 import uuid
-from typing import Union
 
 from fastapi import Depends, HTTPException, status
 from sqlalchemy import Select, distinct, func, select
@@ -13,15 +12,16 @@ from src.submenus.schemas import SubMenu, SubMenuCreationInput
 
 
 class SubMenuRepository(BaseRepository[
-            models.SubMenu,
-            SubMenu,
-            SubMenuCreationInput,
-        ]):
+    models.SubMenu,
+    SubMenu,
+    SubMenuCreationInput,
+]):
     """Working with db for model SubMenu."""
+
     def __init__(self, session: AsyncSession = Depends(get_async_session)):
         super().__init__(get_schema=SubMenu, model=models.SubMenu, session=session)
 
-    async def get_query(self, **filters: Union[uuid.UUID, str]) -> Select:
+    async def get_query(self, **filters: uuid.UUID | str) -> Select:
         """Query for get menus."""
         return (
             select(
@@ -29,7 +29,7 @@ class SubMenuRepository(BaseRepository[
                 self.model.title,
                 self.model.description,
                 self.model.menu_id,
-                func.count(distinct(Dish.id)).label("dishes_count"),
+                func.count(distinct(Dish.id)).label('dishes_count'),
             )
             .filter_by(**filters)
             .outerjoin(Dish, self.model.id == Dish.submenu_id)
@@ -37,15 +37,15 @@ class SubMenuRepository(BaseRepository[
         )
 
     async def create(
-                self,
-                data: SubMenuCreationInput,
-                **kwargs: Union[uuid.UUID, str],
-            ) -> models.SubMenu:
+        self,
+        data: SubMenuCreationInput,
+        **kwargs: uuid.UUID | str,
+    ) -> models.SubMenu:
         """Create submenu."""
         submenu = await self.get_all(title=data.title)
         if submenu:
             raise HTTPException(
                 status_code=status.HTTP_403_FORBIDDEN,
-                detail=f"Submenu with title - {data.title}, already exist",
+                detail=f'Submenu with title - {data.title}, already exist',
             )
         return await self.perform_create(data, **kwargs)

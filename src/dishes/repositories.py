@@ -1,5 +1,4 @@
 import uuid
-from typing import Union
 
 from fastapi import Depends
 from sqlalchemy import Select, select
@@ -13,10 +12,11 @@ from src.dishes.schemas import CreateDish, Dish
 
 class DishRepository(BaseRepository[models.Dish, Dish, CreateDish]):
     """Working with db for model Dish."""
+
     def __init__(self, session: AsyncSession = Depends(get_async_session)):
         super().__init__(get_schema=Dish, model=models.Dish, session=session)
 
-    async def get_query(self, **filters: Union[uuid.UUID, str]) -> Select:
+    async def get_query(self, **filters: uuid.UUID | str) -> Select:
         """Query for get dishes."""
         return (
             select(

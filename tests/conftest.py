@@ -8,8 +8,8 @@ from src.database import get_async_session
 from src.main import app
 
 pytest_plugins = [
-    "tests.fixtures.fixture_database",
-    "tests.fixtures.fixture_data",
+    'tests.fixtures.fixture_database',
+    'tests.fixtures.fixture_data',
 ]
 
 engine_test = asyncio.create_async_engine(settings.db_test_url, poolclass=NullPool)

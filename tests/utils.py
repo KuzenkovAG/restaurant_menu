@@ -4,11 +4,11 @@ from sqlalchemy.orm.decl_api import DeclarativeAttributeIntercept as Base
 
 
 async def get_object(
-            db: AsyncSession,
-            model: Base,
-            many: bool = False,
-            **filters: Column[str],
-        ):
+    db: AsyncSession,
+    model: Base,
+    many: bool = False,
+    **filters: Column[str],
+):
     """Get object with filters."""
     query = select(model).filter_by(**filters)
     obj = await db.execute(query)

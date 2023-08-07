@@ -28,6 +28,8 @@ services:
     depends_on:
       test_db:
         condition: service_healthy
+      redis:
+        condition: service_healthy
 
   redis:
     image: redis:6.2

@@ -5,16 +5,20 @@ from sqlalchemy import engine_from_config, pool
 
 from src.config import settings
 from src.database import Base
-from src.dishes import models
-from src.menus import models
-from src.submenus import models
+from src.dishes import models as dishes_models
+from src.menus import models as menus_models
+from src.submenus import models as submenu_models
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
+
+# for fix flake8 conflicts
+not_used_list = [dishes_models.Dish, menus_models.Menu, submenu_models.SubMenu]
+
 config = context.config
 
 section = config.config_ini_section
-config.set_section_option(section, "DATABASE_URL", settings.db_url)
+config.set_section_option(section, 'DATABASE_URL', settings.db_url)
 
 # Interpret the config file for Python logging.
 # This line sets up loggers basically.
