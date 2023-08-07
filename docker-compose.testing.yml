@@ -45,4 +45,4 @@ services:
       timeout: 10s
       retries: 10
     volumes:
-      - ./data/redis/:/data
+      - ./data/redis_cache/:/data
