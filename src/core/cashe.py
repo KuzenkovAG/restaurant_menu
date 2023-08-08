@@ -27,5 +27,11 @@ class Cache:
         await self.redis.set(key, json.dumps(jsonable_encoder(value)))
 
     async def clear(self, key: str, *keys: str) -> None:
-        """Delete cache."""
+        """Clear cache for key/keys."""
         await self.redis.delete(key, *keys)
+
+    async def clear_by_mask(self, key_mask: str) -> None:
+        """Clear cache for all keys what contain mask."""
+        keys = await self.redis.keys(f'{key_mask}*')
+        if keys:
+            await self.clear(*keys)

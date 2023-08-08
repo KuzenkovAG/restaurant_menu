@@ -18,7 +18,7 @@ async def get_dishes(
     dishes: DishService = Depends(),
 ) -> list[schemas.Dish]:
     """Get list of dishes."""
-    return await dishes.get_all(submenu_id=submenu_id)
+    return await dishes.get_all(submenu_id=submenu_id, menu_id=menu_id)
 
 
 @router.get('/{dish_id}', response_model=schemas.Dish, status_code=status.HTTP_200_OK)
@@ -29,7 +29,7 @@ async def get_dish(
     dishes: DishService = Depends(),
 ) -> schemas.Dish:
     """Get dish by id."""
-    return await dishes.get(id=dish_id, submenu_id=submenu_id)
+    return await dishes.get(dish_id=dish_id, submenu_id=submenu_id, menu_id=menu_id)
 
 
 @router.post('/', response_model=schemas.CreateDishOutput, status_code=status.HTTP_201_CREATED)

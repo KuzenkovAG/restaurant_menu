@@ -28,7 +28,7 @@ async def get_submenu(
     submenu: SubMenuService = Depends(),
 ) -> schemas.SubMenu:
     """Get submenu by id."""
-    return await submenu.get(id=submenu_id, menu_id=menu_id)
+    return await submenu.get(submenu_id=submenu_id, menu_id=menu_id)
 
 
 @router.post(

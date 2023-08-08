@@ -16,23 +16,35 @@ class DishService:
         self.repository = repository
         self.cache = cache
 
-    async def get(self, **filters: uuid.UUID | str) -> schemas.Dish:
+    async def get(
+            self,
+            dish_id: uuid.UUID,
+            submenu_id: uuid.UUID,
+            menu_id: uuid.UUID,
+    ) -> schemas.Dish:
         """Get dish by filter."""
-        key = f"dish_{filters.get('id')}"
+        key = f'menu_{menu_id}_submenu_{submenu_id}_dish_{dish_id}'
         dish_cache = await self.cache.get(key)
         if dish_cache:
             return schemas.Dish.model_validate(dish_cache)
-        dish = await self.repository.get_object_or_404(**filters)
+        dish = await self.repository.get_object_or_404(
+            id=dish_id,
+            submenu_id=submenu_id,
+        )
         await self.cache.set(key, schemas.Dish.model_validate(dish))
         return dish
 
-    async def get_all(self, **filters: uuid.UUID | str) -> list[schemas.Dish]:
+    async def get_all(
+            self,
+            submenu_id: uuid.UUID,
+            menu_id: uuid.UUID,
+    ) -> list[schemas.Dish]:
         """Get all dishes."""
-        key = 'dishes'
+        key = f'menu_{menu_id}_submenu_{submenu_id}_dishes'
         dishes_cache = await self.cache.get(key=key)
         if dishes_cache:
             return [schemas.Dish.model_validate(dish) for dish in dishes_cache]
-        dishes = await self.repository.get_all(**filters)
+        dishes = await self.repository.get_all(submenu_id=submenu_id)
         await self.cache.set(key=key, value=dishes)
         return dishes
 
@@ -44,12 +56,9 @@ class DishService:
     ) -> schemas.CreateDishOutput:
         """Create dish."""
         dish = await self.repository.create(data=data, submenu_id=submenu_id)
-        await self.cache.clear(
-            'menus',
-            'submenus',
-            'dishes',
-            f'menu_{menu_id}',
-            f'submenu_{submenu_id}',
+        await self._clear_cache_parents(
+            menu_id=menu_id,
+            submenu_id=submenu_id,
         )
         return schemas.CreateDishOutput.model_validate(dish)
 
@@ -63,12 +72,8 @@ class DishService:
         """Update dish."""
         dish = await self.repository.update(data=data, id=dish_id)
         await self.cache.clear(
-            'menus',
-            'submenus',
-            'dishes',
-            f'menu_{menu_id}',
-            f'submenu_{submenu_id}',
-            f'dish_{dish_id}',
+            f'menu_{menu_id}_submenu_{submenu_id}_dishes',
+            f'menu_{menu_id}_submenu_{submenu_id}_dish_{dish_id}',
         )
         return schemas.CreateDishOutput.model_validate(dish)
 
@@ -81,10 +86,19 @@ class DishService:
         """Delete dish."""
         await self.repository.delete(id=dish_id)
         await self.cache.clear(
+            f'menu_{menu_id}_submenu_{submenu_id}_dish_{dish_id}',
+        )
+        await self._clear_cache_parents(
+            menu_id=menu_id,
+            submenu_id=submenu_id,
+        )
+
+    async def _clear_cache_parents(self, menu_id: uuid.UUID, submenu_id: uuid.UUID) -> None:
+        """Clear cache of parents."""
+        await self.cache.clear(
             'menus',
-            'submenus',
-            'dishes',
             f'menu_{menu_id}',
-            f'submenu_{submenu_id}',
-            f'dish_{dish_id}',
+            f'menu_{menu_id}_submenus',
+            f'menu_{menu_id}_submenu_{submenu_id}',
+            f'menu_{menu_id}_submenu_{submenu_id}_dishes',
         )

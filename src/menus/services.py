@@ -57,4 +57,5 @@ class MenuService:
     async def delete(self, menu_id: uuid.UUID) -> None:
         """Delete menu."""
         await self.repository.delete(id=menu_id)
-        await self.cache.clear('menus', 'submenus', 'dishes', f'menu_{menu_id}')
+        await self.cache.clear('menus')
+        await self.cache.clear_by_mask(f'menu_{menu_id}')
