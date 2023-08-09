@@ -1,19 +1,15 @@
-import uuid
-
-from sqlalchemy import UUID, Column, ForeignKey, String, Text
+from sqlalchemy import UUID, Column, ForeignKey, String
 from sqlalchemy.orm import relationship
 
-from src.database import Base
+from src.core.models import BaseUUIDDescriptionModel
 
 
-class SubMenu(Base):
+class SubMenu(BaseUUIDDescriptionModel):
     """Model for SubMenus."""
     __tablename__ = 'submenus'
     __mapper_args__ = {'confirm_deleted_rows': False}
 
-    id = Column(UUID(as_uuid=False), primary_key=True, default=uuid.uuid4)
     title = Column(String(length=128), unique=True, nullable=False)
-    description = Column(Text)
     menu_id = Column(
         UUID(as_uuid=False),
         ForeignKey('menus.id', ondelete='CASCADE'),

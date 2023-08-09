@@ -1,31 +1,21 @@
-import abc
 import uuid
 
-from pydantic import BaseModel, ConfigDict
+from src.core.schemas import BaseSchema
 
 
-class SubMenuBaseModel(BaseModel, abc.ABC):
-    """Base schema for Dish."""
-    model_config = ConfigDict(from_attributes=True)
-    title: str
-    description: str
-
-
-class SubMenu(SubMenuBaseModel):
+class SubMenu(BaseSchema):
     """SubMenu schema."""
     id: uuid.UUID
-    title: str
     menu_id: uuid.UUID
-    description: str
     dishes_count: int
 
 
-class SubMenuCreationInput(SubMenuBaseModel):
+class SubMenuCreationInput(BaseSchema):
     """Input schema for creation SubMenu."""
     ...
 
 
-class SubMenuCreationOutput(SubMenuBaseModel):
+class SubMenuCreationOutput(BaseSchema):
     """Output schema for creation SubMenu."""
     id: uuid.UUID
     menu_id: uuid.UUID
