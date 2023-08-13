@@ -20,7 +20,7 @@ cat .env-example > .env
 docker compose -f docker-compose.production.yml up --build -d
 ```
 ### Test run
-1. Create .env
+1. Create .env (if not did before)
 ```sh
 cat .env-example > .env
 ```
@@ -29,24 +29,30 @@ cat .env-example > .env
 docker compose -f docker-compose.testing.yml up --build
 ```
 
-#### Задания со звездочкой
-## ДЗ-2
+## Задания со звездочкой
+#### ДЗ-2
 * Реализовать вывод количества подменю и блюд для Меню через один (сложный) ORM запрос.
-src/menus/repositories.py: 23-36
-src/submenus/repositories.py: 25-38
+[src/menus/repositories.py: 23-36](https://github.com/KuzenkovAG/restaurant_menu/blob/c363ee75c843fc91eede72ef5863c2975d364a45/src/menus/repositories.py#L25C8-L25C8)
+[src/submenus/repositories.py: 25-38](https://github.com/KuzenkovAG/restaurant_menu/blob/c363ee75c843fc91eede72ef5863c2975d364a45/src/submenus/repositories.py#L27)
 * Реализовать тестовый сценарий «Проверка кол-ва блюд и подменю в меню» из Postman с помощью pytest
-tests/test_counts.py: 11-76
-## ДЗ-3
+[tests/test_counts.py: 11-76](https://github.com/KuzenkovAG/restaurant_menu/blob/c363ee75c843fc91eede72ef5863c2975d364a45/tests/test_counts.py#L11)
+#### ДЗ-3
 * Реализовать в тестах аналог Django reverse() для FastAPI
-tests/test_menus.py: 24, 43, 71 .... (везде где происходит обращение к url)
-## ДЗ-4
-* Обновление меню из google sheets раз в 15 сек.
-google sheets - [ссылка]
-src/config.py: 17-21
-FROM_GOOGLE_SHEETS = False  # False из файла src/admin/Menu.xlsx, True - из Google sheet
-src/admin/update_db.py: 215
+Реализовано во всех тестах, где происходит обращение к url.
+Пример: [tests/test_menus.py: 24](https://github.com/KuzenkovAG/restaurant_menu/blob/c363ee75c843fc91eede72ef5863c2975d364a45/tests/test_menus.py#L24C1-L24C1)
 
-#### Install pre-commit hooks (windows)
+#### ДЗ-4
+* Обновление меню из google sheets раз в 15 сек.
+
+```python
+FROM_GOOGLE_SHEETS = False  # False из файла src/admin/Menu.xlsx, True - из Google sheet
+```
+[Таблица google sheets](https://docs.google.com/spreadsheets/d/1Fk0z7zcl8A5ugGeoZ-DKi9vB_j9XUQyBUSo2sz3W0DA/edit#gid=0)
+[src/config.py: 34-40](https://github.com/KuzenkovAG/restaurant_menu/blob/c363ee75c843fc91eede72ef5863c2975d364a45/src/config.py#L40)
+[src/admin/update_db.py: 215](https://github.com/KuzenkovAG/restaurant_menu/blob/c363ee75c843fc91eede72ef5863c2975d364a45/src/admin/update_db.py#L212)
+[src/admin/parser.py: 53:94](https://github.com/KuzenkovAG/restaurant_menu/blob/c363ee75c843fc91eede72ef5863c2975d364a45/src/admin/parsers.py#L53)
+
+## Install pre-commit hooks (windows)
 1. Install venv
 ```sh
 py -3.10 -m venv venv
@@ -275,4 +281,4 @@ PATCH: */api/v1/menus/{menu_id}/submenus/{submenu_id}/dishes/{dish_id}*
 DELETE: */api/v1/menus/{menu_id}/submenus/{submenu_id}/dishes/{dish_id}*
 
 
-[ссылка]: <https://docs.google.com/spreadsheets/d/1Fk0z7zcl8A5ugGeoZ-DKi9vB_j9XUQyBUSo2sz3W0DA/edit#gid=0>
+[ссылка]: <>
