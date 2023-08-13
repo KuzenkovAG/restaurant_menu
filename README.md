@@ -31,26 +31,25 @@ docker compose -f docker-compose.testing.yml up --build
 
 ## Задания со звездочкой
 #### ДЗ-2
-* Реализовать вывод количества подменю и блюд для Меню через один (сложный) ORM запрос.
-[src/menus/repositories.py: 23-36](https://github.com/KuzenkovAG/restaurant_menu/blob/c363ee75c843fc91eede72ef5863c2975d364a45/src/menus/repositories.py#L25C8-L25C8)
-[src/submenus/repositories.py: 25-38](https://github.com/KuzenkovAG/restaurant_menu/blob/c363ee75c843fc91eede72ef5863c2975d364a45/src/submenus/repositories.py#L27)
-* Реализовать тестовый сценарий «Проверка кол-ва блюд и подменю в меню» из Postman с помощью pytest
-[tests/test_counts.py: 11-76](https://github.com/KuzenkovAG/restaurant_menu/blob/c363ee75c843fc91eede72ef5863c2975d364a45/tests/test_counts.py#L11)
+* Реализовать вывод количества подменю и блюд для Меню через один (сложный) ORM запрос.  
+[src/menus/repositories.py: 23-36](https://github.com/KuzenkovAG/restaurant_menu/blob/c363ee75c843fc91eede72ef5863c2975d364a45/src/menus/repositories.py#L25C8-L25C8)  
+[src/submenus/repositories.py: 25-38](https://github.com/KuzenkovAG/restaurant_menu/blob/c363ee75c843fc91eede72ef5863c2975d364a45/src/submenus/repositories.py#L27)  
+* Реализовать тестовый сценарий «Проверка кол-ва блюд и подменю в меню» из Postman с помощью pytest  
+[tests/test_counts.py: 11-76](https://github.com/KuzenkovAG/restaurant_menu/blob/c363ee75c843fc91eede72ef5863c2975d364a45/tests/test_counts.py#L11)  
 #### ДЗ-3
-* Реализовать в тестах аналог Django reverse() для FastAPI
-Реализовано во всех тестах, где происходит обращение к url.
-Пример: [tests/test_menus.py: 24](https://github.com/KuzenkovAG/restaurant_menu/blob/c363ee75c843fc91eede72ef5863c2975d364a45/tests/test_menus.py#L24C1-L24C1)
+* Реализовать в тестах аналог Django reverse() для FastAPI  
+Реализовано во всех тестах, где происходит обращение к url.  
+Пример: [tests/test_menus.py: 24](https://github.com/KuzenkovAG/restaurant_menu/blob/c363ee75c843fc91eede72ef5863c2975d364a45/tests/test_menus.py#L24C1-L24C1)  
 
 #### ДЗ-4
-* Обновление меню из google sheets раз в 15 сек.
-
+* Обновление меню из google sheets раз в 15 сек.  
 ```python
 FROM_GOOGLE_SHEETS = False  # False из файла src/admin/Menu.xlsx, True - из Google sheet
 ```
-[Таблица google sheets](https://docs.google.com/spreadsheets/d/1Fk0z7zcl8A5ugGeoZ-DKi9vB_j9XUQyBUSo2sz3W0DA/edit#gid=0)
-[src/config.py: 34-40](https://github.com/KuzenkovAG/restaurant_menu/blob/c363ee75c843fc91eede72ef5863c2975d364a45/src/config.py#L40)
-[src/admin/update_db.py: 215](https://github.com/KuzenkovAG/restaurant_menu/blob/c363ee75c843fc91eede72ef5863c2975d364a45/src/admin/update_db.py#L212)
-[src/admin/parser.py: 53:94](https://github.com/KuzenkovAG/restaurant_menu/blob/c363ee75c843fc91eede72ef5863c2975d364a45/src/admin/parsers.py#L53)
+[Таблица google sheets](https://docs.google.com/spreadsheets/d/1Fk0z7zcl8A5ugGeoZ-DKi9vB_j9XUQyBUSo2sz3W0DA/edit#gid=0)  
+[src/config.py: 34-40](https://github.com/KuzenkovAG/restaurant_menu/blob/c363ee75c843fc91eede72ef5863c2975d364a45/src/config.py#L40)  
+[src/admin/update_db.py: 215](https://github.com/KuzenkovAG/restaurant_menu/blob/c363ee75c843fc91eede72ef5863c2975d364a45/src/admin/update_db.py#L212)  
+[src/admin/parser.py: 53:94](https://github.com/KuzenkovAG/restaurant_menu/blob/c363ee75c843fc91eede72ef5863c2975d364a45/src/admin/parsers.py#L53)  
 
 ## Install pre-commit hooks (windows)
 1. Install venv
@@ -279,6 +278,3 @@ PATCH: */api/v1/menus/{menu_id}/submenus/{submenu_id}/dishes/{dish_id}*
 ```
 - **Delete dish**
 DELETE: */api/v1/menus/{menu_id}/submenus/{submenu_id}/dishes/{dish_id}*
-
-
-[ссылка]: <>
