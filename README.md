@@ -21,22 +21,25 @@ docker compose -f docker-compose.production.yml up --build -d
 ```
 ## Запуск тестов postman
 #### ВАЖНО
-При запуске docker-compose.production.yml, сразу запускается celery и наполняет базу данными из excel.
-Если есть необходимость проверки тестов через postman нужно:
-1. Убедиться что база очищена.
+При запуске docker-compose.production.yml, сразу запускается celery и наполняет базу данными из excel.<br>
+Если необходимо запустить postman тесты нужно:
+1. Остановить контейнера (Если они запускались ранее)
+```sh
+docker compose -f docker-compose.production.yml stop
+```
+2. Убедиться что база очищена.
 Для очистки базы:
 ```sh
 rm -r data/pg_data/
 ```
-2. Создать .env (если не сделано ранее)
+3. Создать .env (если не сделано ранее)
 ```sh
 cat .env-example > .env
 ```
-3. Запустить контейнеры без celery
+4. Запустить контейнеры без celery
 ```sh
 docker compose -f docker-compose.postman-tests.yml up --build -d
 ```
-4. После прохождения тестов запустить docker-compose.production.yml (команда выше)
 
 
 ## Запуск тестов Pytest
