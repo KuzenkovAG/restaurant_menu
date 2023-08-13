@@ -1,3 +1,5 @@
+from pathlib import Path
+
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -22,6 +24,21 @@ class Settings(BaseSettings):
     REDIS_HOST: str | None = None
     REDIS_PORT: int | None = None
 
+    RABBIT_USER: str | None = None
+    RABBIT_PASS: str | None = None
+    RABBIT_HOST: str | None = None
+
+    BASE_DIR: str = str(Path(__file__).resolve().parent.parent)
+
+    # Celery db update settings
+    DB_UPDATE_PERIOD_IN_SECONDS: int = 15
+    ADMIN_EXCEL_PATH: str = BASE_DIR + '/src/admin/Menu.xlsx'
+    GOOGLE_SHEET_ID: str = '1Fk0z7zcl8A5ugGeoZ-DKi9vB_j9XUQyBUSo2sz3W0DA'
+    ADMIN_GOOGLE_SHEET: str = (
+        f'https://docs.google.com/spreadsheets/d/{GOOGLE_SHEET_ID}/export?format=xlsx&id={GOOGLE_SHEET_ID}'
+    )
+    FROM_GOOGLE_SHEETS: bool = True
+
     @property
     def db_url(self) -> str:
         """Product db url."""
@@ -43,6 +60,11 @@ class Settings(BaseSettings):
     def redis_url(self) -> str:
         """Redis url."""
         return f'redis://{self.REDIS_HOST}:{self.REDIS_PORT}'
+
+    @property
+    def rabbit_url(self) -> str:
+        """Rabbit url."""
+        return f'amqp://{self.RABBIT_USER}:{self.RABBIT_PASS}@{self.RABBIT_HOST}//'
 
 
 settings = Settings()

@@ -27,7 +27,7 @@ services:
       sh -c "alembic upgrade head &&
              uvicorn src.main:app --host 0.0.0.0 --port 8000"
     ports:
-     - "8000:8000"
+     - "8001:8000"
     depends_on:
       db:
         condition: service_healthy
@@ -49,3 +49,35 @@ services:
       retries: 10
     volumes:
       - ./data/redis_cache/:/data
+
+  celery:
+    build: .
+    volumes:
+      - .:/app
+    entrypoint: >
+      sh -c "
+        celery -A src.celery_conf worker -B --loglevel=info
+      "
+    env_file:
+      - .env
+
+  rabbitmq:
+    image: rabbitmq:latest
+    restart: always
+    hostname: rabbitmq
+    env_file:
+      - .env
+    environment:
+      - RABBITMQ_DEFAULT_USER=${RABBIT_USER}
+      - RABBITMQ_DEFAULT_PASS=${RABBIT_PASS}
+    volumes:
+      - ./data/rabbitmq/data/:/var/lib/rabbitmq
+      - ./data/rabbitmq/logs/:/var/log/rabbitmq
+    ports:
+      - "5672:5672"
+      - "15692:15692"
+    healthcheck:
+      test: [ "CMD", "rabbitmq-diagnostics", "-q", "ping" ]
+      interval: 10s
+      timeout: 30s
+      retries: 20

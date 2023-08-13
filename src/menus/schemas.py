@@ -1,6 +1,7 @@
 import uuid
 
 from src.core.schemas import BaseSchema
+from src.submenus.schemas import SubmenuWithRelations
 
 
 class Menu(BaseSchema):
@@ -18,3 +19,9 @@ class MenuCreateInput(BaseSchema):
 class MenuCreateOutput(BaseSchema):
     """Output schema for creation Menu."""
     id: uuid.UUID | str
+
+
+class MenuWithRelations(BaseSchema):
+    """Menu schema with relations."""
+    id: uuid.UUID | str
+    submenus: list[SubmenuWithRelations]

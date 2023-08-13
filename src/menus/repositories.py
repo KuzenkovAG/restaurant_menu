@@ -1,4 +1,6 @@
 import uuid
+from collections.abc import Sequence
+from typing import Annotated
 
 from fastapi import Depends, HTTPException, status
 from sqlalchemy import Select, distinct, func, select
@@ -15,7 +17,7 @@ from src.submenus.models import SubMenu
 class MenuRepository(BaseRepository[models.Menu, Menu, MenuCreateInput]):
     """Working with db for model Menu."""
 
-    def __init__(self, session: AsyncSession = Depends(get_async_session)):
+    def __init__(self, session: AsyncSession):
         super().__init__(get_schema=Menu, model=models.Menu, session=session)
 
     async def get_query(self, **filters: uuid.UUID | str) -> Select:
@@ -34,6 +36,12 @@ class MenuRepository(BaseRepository[models.Menu, Menu, MenuCreateInput]):
             .group_by(self.model.id)
         )
 
+    async def get_with_relations(self) -> Sequence[models.Menu]:
+        """Return query of model."""
+        query = select(self.model)
+        objects = await self.session.execute(query)
+        return objects.scalars().all()
+
     async def create(
         self,
         data: MenuCreateInput,
@@ -47,3 +55,7 @@ class MenuRepository(BaseRepository[models.Menu, Menu, MenuCreateInput]):
                 detail=f'Menu with title - {data.title}, already exist',
             )
         return await self.perform_create(data, **kwargs)
+
+
+async def get_menu_repository(session: Annotated[AsyncSession, Depends(get_async_session)]) -> MenuRepository:
+    return MenuRepository(session=session)

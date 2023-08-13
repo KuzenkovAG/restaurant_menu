@@ -26,6 +26,7 @@ async def clear_cache():
     await redis.flushall()
     yield None
     await redis.flushall()
+    await redis.close()
 
 
 @pytest.fixture(scope='session')

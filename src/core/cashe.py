@@ -1,5 +1,5 @@
 import json
-from typing import TypeVar
+from typing import Annotated, TypeVar
 
 from aioredis import Redis
 from fastapi import Depends
@@ -14,7 +14,7 @@ T_Schema = TypeVar('T_Schema', bound=BaseModel)
 class Cache:
     """Manager of cache."""
 
-    def __init__(self, redis: Redis = Depends(get_redis_connection)):
+    def __init__(self, redis: Redis):
         self.redis = redis
 
     async def get(self, key: str) -> dict | list | None:
@@ -35,3 +35,7 @@ class Cache:
         keys = await self.redis.keys(f'{key_mask}*')
         if keys:
             await self.clear(*keys)
+
+
+def get_cache(redis: Annotated[Redis, Depends(get_redis_connection)]):
+    return Cache(redis=redis)

@@ -1,4 +1,5 @@
 import uuid
+from typing import Annotated
 
 from fastapi import Depends, HTTPException, status
 from sqlalchemy import Select, distinct, func, select
@@ -18,7 +19,7 @@ class SubMenuRepository(BaseRepository[
 ]):
     """Working with db for model SubMenu."""
 
-    def __init__(self, session: AsyncSession = Depends(get_async_session)):
+    def __init__(self, session: AsyncSession):
         super().__init__(get_schema=SubMenu, model=models.SubMenu, session=session)
 
     async def get_query(self, **filters: uuid.UUID | str) -> Select:
@@ -49,3 +50,7 @@ class SubMenuRepository(BaseRepository[
                 detail=f'Submenu with title - {data.title}, already exist',
             )
         return await self.perform_create(data, **kwargs)
+
+
+async def get_submenu_repository(session: Annotated[AsyncSession, Depends(get_async_session)]) -> SubMenuRepository:
+    return SubMenuRepository(session=session)

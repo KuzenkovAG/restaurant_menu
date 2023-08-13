@@ -1,8 +1,8 @@
 venv/
 .idea/
 __pycache__/
-pg_data/
-pg_data_test/
-redis_cache/
+
+data/
+celerybeat-schedule
 
 .env

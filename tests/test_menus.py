@@ -3,8 +3,10 @@ import uuid
 from fastapi import status
 from httpx import AsyncClient
 
+from src.dishes.models import Dish
 from src.main import app
 from src.menus.models import Menu
+from src.submenus.models import SubMenu
 from tests.conftest import async_test_session_maker
 from tests.utils import count_objects, get_object
 
@@ -29,6 +31,40 @@ class TestCrudMenu:
         assert response_menu.get('description') == menu.description, (
             'Поле description отличается',
         )
+
+    async def test_get_menus_with_relations(
+            self,
+            menu: Menu,
+            submenu: SubMenu,
+            dish: Dish,
+            async_client: AsyncClient,
+    ):
+        """Тест - вывод списка меню и связей."""
+        url = app.url_path_for('get_menu_with_relations')
+        response = await async_client.get(url)
+        assert response.status_code == status.HTTP_200_OK
+        assert response.json() == [
+            {
+                'title': str(menu.title),
+                'description': menu.description,
+                'id': str(menu.id),
+                'submenus': [
+                    {'title': submenu.title,
+                     'description': submenu.description,
+                     'id': str(submenu.id),
+                     'dishes':
+                         [
+                             {
+                                 'title': dish.title,
+                                 'description': dish.description,
+                                 'price': str(dish.price),
+                                 'id': str(dish.id),
+                             },
+                     ],
+                     },
+                ],
+            },
+        ]
 
     async def test_get_single_menu(self, async_client: AsyncClient, menu: Menu):
         """Тест - получение одиночного меню по id."""

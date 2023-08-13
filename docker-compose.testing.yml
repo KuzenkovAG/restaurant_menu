@@ -21,6 +21,9 @@ services:
 
   test_web:
     build: .
+    environment:
+      - REDIS_HOST=test_redis
+      - REDIS_PORT=16379
     env_file:
       - .env
     command:
@@ -28,21 +31,19 @@ services:
     depends_on:
       test_db:
         condition: service_healthy
-      redis:
+      test_redis:
         condition: service_healthy
 
-  redis:
+  test_redis:
     image: redis:6.2
     restart: always
     env_file:
       - .env
-    ports:
-      - "${REDIS_PORT}:6379"
-    command: bash -c "redis-server --requirepass ${REDIS_PASS}"
+    command: bash -c "redis-server --requirepass ${REDIS_PASS} --port 16379"
     healthcheck:
-      test: [ "CMD", "redis-cli", "--raw", "incr", "ping" ]
+      test: [ "CMD", "redis-cli", "-p", "16379", "--raw", "incr", "ping" ]
       interval: 5s
       timeout: 10s
       retries: 10
     volumes:
-      - ./data/redis_cache/:/data
+      - ./data/test_redis_cache/:/data

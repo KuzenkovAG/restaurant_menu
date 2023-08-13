@@ -15,7 +15,7 @@ cd restaurant_menu/
 ```sh
 cat .env-example > .env
 ```
-4. Run app
+4. Run app (after )
 ```sh
 docker compose -f docker-compose.production.yml up --build -d
 ```
@@ -29,7 +29,24 @@ cat .env-example > .env
 docker compose -f docker-compose.testing.yml up --build
 ```
 
-### Install pre-commit hooks (windows)
+#### Задания со звездочкой
+## ДЗ-2
+* Реализовать вывод количества подменю и блюд для Меню через один (сложный) ORM запрос.
+src/menus/repositories.py: 23-36
+src/submenus/repositories.py: 25-38
+* Реализовать тестовый сценарий «Проверка кол-ва блюд и подменю в меню» из Postman с помощью pytest
+tests/test_counts.py: 11-76
+## ДЗ-3
+* Реализовать в тестах аналог Django reverse() для FastAPI
+tests/test_menus.py: 24, 43, 71 .... (везде где происходит обращение к url)
+## ДЗ-4
+* Обновление меню из google sheets раз в 15 сек.
+google sheets - [ссылка]
+src/config.py: 17-21
+FROM_GOOGLE_SHEETS = False  # False из файла src/admin/Menu.xlsx, True - из Google sheet
+src/admin/update_db.py: 215
+
+#### Install pre-commit hooks (windows)
 1. Install venv
 ```sh
 py -3.10 -m venv venv
@@ -256,3 +273,6 @@ PATCH: */api/v1/menus/{menu_id}/submenus/{submenu_id}/dishes/{dish_id}*
 ```
 - **Delete dish**
 DELETE: */api/v1/menus/{menu_id}/submenus/{submenu_id}/dishes/{dish_id}*
+
+
+[ссылка]: <https://docs.google.com/spreadsheets/d/1Fk0z7zcl8A5ugGeoZ-DKi9vB_j9XUQyBUSo2sz3W0DA/edit#gid=0>

@@ -13,7 +13,7 @@ class DishBaseModel(BaseSchema, abc.ABC):
 class Dish(DishBaseModel):
     """Dish model schema."""
     id: uuid.UUID | str
-    submenu_id: uuid.UUID | str
+    submenu_id: str
 
 
 class CreateDish(DishBaseModel):
