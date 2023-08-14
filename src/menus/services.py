@@ -48,7 +48,7 @@ class MenuService:
         if cache:
             return [schemas.MenuWithRelations.model_validate(menu) for menu in cache]
         menus = await self.repository.get_with_relations()
-        menus_with_relations = [schemas.MenuWithRelations.model_validate(menu) for menu in menus]
+        menus_with_relations = [schemas.MenuWithRelations.model_validate(menu[0]) for menu in menus]
         await self.cache.set(key=key, value=menus_with_relations)
         return menus_with_relations
 

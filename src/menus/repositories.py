@@ -3,8 +3,9 @@ from collections.abc import Sequence
 from typing import Annotated
 
 from fastapi import Depends, HTTPException, status
-from sqlalchemy import Select, distinct, func, select
+from sqlalchemy import Row, Select, distinct, func, select
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import joinedload
 
 from src.core.repositories import BaseRepository
 from src.database import get_async_session
@@ -36,11 +37,11 @@ class MenuRepository(BaseRepository[models.Menu, Menu, MenuCreateInput]):
             .group_by(self.model.id)
         )
 
-    async def get_with_relations(self) -> Sequence[models.Menu]:
-        """Return query of model."""
-        query = select(self.model)
+    async def get_with_relations(self) -> Sequence[Row[tuple[models.Menu]]]:
+        """Return model with relations."""
+        query = select(self.model).options(joinedload(self.model.submenus).joinedload(SubMenu.dishes))
         objects = await self.session.execute(query)
-        return objects.scalars().all()
+        return objects.unique().all()
 
     async def create(
         self,
