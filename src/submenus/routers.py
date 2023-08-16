@@ -3,8 +3,8 @@ from typing import Annotated
 
 from fastapi import APIRouter, Depends, status
 
-from . import schemas
-from .services import SubMenuService, get_submenu_service
+from src.submenus import schemas
+from src.submenus.services import SubMenuService, get_submenu_service
 
 router = APIRouter(prefix='/menus/{menu_id}/submenus', tags=['SubMenu'])
 

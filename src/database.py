@@ -3,7 +3,7 @@ from collections.abc import AsyncGenerator
 from sqlalchemy.ext import asyncio
 from sqlalchemy.orm import DeclarativeBase
 
-from .config import settings
+from src.config import settings
 
 engine = asyncio.create_async_engine(settings.db_url)
 async_session_maker = asyncio.async_sessionmaker(engine, expire_on_commit=False)

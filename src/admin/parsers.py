@@ -92,3 +92,59 @@ class ExcelParser(BaseParser):
                     'submenu_id': submenu_id,
                 }
         return data
+
+
+async def parse_db(menus: list) -> dict[str, dict[str, dict]]:
+    """
+    Parse data to special structure for easy compare.
+    Return:
+    {
+        'menus': {
+            '13d81e02-3911-11ee-be56-0242ac120003': {
+                'field_name': 'field_value'
+                ...
+            },
+            ...
+        }
+        'submenus': {
+            '13d81e02-3911-11ee-be56-0242ac120003': {
+                'field_name': 'field_value'
+                ...
+            },
+            ...
+        }
+        'dishes': {
+            '13d81e02-3911-11ee-be56-0242ac120003': {
+                'field_name': 'field_value'
+                ...
+            },
+            ...
+        }
+    }
+    """
+    total_menus = {}
+    total_submenus = {}
+    total_dishes = {}
+    for menu in menus:
+        total_menus[menu.id] = {
+            'id': menu.id,
+            'title': menu.title,
+            'description': menu.description,
+        }
+        for submenu in menu.submenus:
+            total_submenus[submenu.id] = {
+                'id': submenu.id,
+                'title': submenu.title,
+                'description': submenu.description,
+                'menu_id': menu.id,
+            }
+            for dish in submenu.dishes:
+                total_dishes[dish.id] = {
+                    'id': dish.id,
+                    'title': dish.title,
+                    'description': dish.description,
+                    'price': dish.description,
+                    'menu_id': menu.id,
+                    'submenu_id': submenu.id,
+                }
+    return {'menus': total_menus, 'submenus': total_submenus, 'dishes': total_dishes}

@@ -27,10 +27,11 @@ docker compose -f docker-compose.production.yml up --build -d
 ```sh
 docker compose -f docker-compose.production.yml stop
 ```
-2. Убедиться что база очищена.
-Для очистки базы:
+2. Убедиться что база очищена (если база чистая и кеш чистый, можно переходить к следующему пункту)<br>
+Для очистки базы и кеша:
 ```sh
 rm -r data/pg_data/
+rm -r data/redis_cache/
 ```
 3. Создать .env (если не сделано ранее)
 ```sh
