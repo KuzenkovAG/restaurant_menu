@@ -15,10 +15,8 @@ cd restaurant_menu/
 ```sh
 cat .env-example > .env
 ```
-4. Запустите приложение
-```sh
-docker compose -f docker-compose.production.yml up --build -d
-```
+
+
 ## Запуск тестов postman
 #### ВАЖНО
 При запуске docker-compose.production.yml, сразу запускается celery и наполняет базу данными из excel.<br>
@@ -33,31 +31,27 @@ docker compose -f docker-compose.production.yml stop
 rm -r data/pg_data/
 rm -r data/redis_cache/
 ```
-3. Создать .env (если не сделано ранее)
-```sh
-cat .env-example > .env
-```
-4. Запустить контейнеры без celery
+3. Запустить контейнеры без celery
 ```sh
 docker compose -f docker-compose.postman-tests.yml up --build -d
 ```
-
-
-## Запуск тестов Pytest
-1. Создайте .env (если не сделано ранее)
+## Запуск приложения
 ```sh
-cat .env-example > .env
+docker compose -f docker-compose.production.yml up --build -d
 ```
-2. Запуск тестов
+Приложение - [открыть в браузере](http://127.0.0.1:8000/docs)<br>
+Админка Google Sheet - [ссылка](https://docs.google.com/spreadsheets/d/1Fk0z7zcl8A5ugGeoZ-DKi9vB_j9XUQyBUSo2sz3W0DA/edit#gid=0)<br>
+## Запуск тестов Pytest
 ```sh
 docker compose -f docker-compose.testing.yml up --build
 ```
 
+
 ## Задания со звездочкой
 #### ДЗ-2
 * Реализовать вывод количества подменю и блюд для Меню через один (сложный) ORM запрос.<br>
-[src/menus/repositories.py: 23-36](https://github.com/KuzenkovAG/restaurant_menu/blob/c363ee75c843fc91eede72ef5863c2975d364a45/src/menus/repositories.py#L25C8-L25C8)<br>
-[src/submenus/repositories.py: 25-38](https://github.com/KuzenkovAG/restaurant_menu/blob/c363ee75c843fc91eede72ef5863c2975d364a45/src/submenus/repositories.py#L27)<br>
+Запрос для меню - [src/menus/repositories.py: 23-36](https://github.com/KuzenkovAG/restaurant_menu/blob/c363ee75c843fc91eede72ef5863c2975d364a45/src/menus/repositories.py#L25C8-L25C8)<br>
+Запрос для подменю- [src/submenus/repositories.py: 25-38](https://github.com/KuzenkovAG/restaurant_menu/blob/c363ee75c843fc91eede72ef5863c2975d364a45/src/submenus/repositories.py#L27)<br>
 * Реализовать тестовый сценарий «Проверка кол-ва блюд и подменю в меню» из Postman с помощью pytest<br>
 [tests/test_counts.py: 11-76](https://github.com/KuzenkovAG/restaurant_menu/blob/c363ee75c843fc91eede72ef5863c2975d364a45/tests/test_counts.py#L11)<br>
 #### ДЗ-3
@@ -71,10 +65,13 @@ docker compose -f docker-compose.testing.yml up --build
 FROM_GOOGLE_SHEETS = True  # True - из Google sheet, False из файла src/admin/Menu.xlsx
 ```
 [Таблица google sheets](https://docs.google.com/spreadsheets/d/1Fk0z7zcl8A5ugGeoZ-DKi9vB_j9XUQyBUSo2sz3W0DA/edit#gid=0)<br>
-[src/config.py: 34-40](https://github.com/KuzenkovAG/restaurant_menu/blob/c363ee75c843fc91eede72ef5863c2975d364a45/src/config.py#L40)<br>
-[src/admin/update_db.py: 215](https://github.com/KuzenkovAG/restaurant_menu/blob/c363ee75c843fc91eede72ef5863c2975d364a45/src/admin/update_db.py#L212)<br>
-[src/admin/parser.py: 53:94](https://github.com/KuzenkovAG/restaurant_menu/blob/c363ee75c843fc91eede72ef5863c2975d364a45/src/admin/parsers.py#L53)<br>
-* Скидка (колонка G в таблице).
+Настройка админки - [src/config.py: 34-40](https://github.com/KuzenkovAG/restaurant_menu/blob/c363ee75c843fc91eede72ef5863c2975d364a45/src/config.py#L40)<br>
+Проверка условия откуда идет сбор данных - [src/admin/update_db.py: 215](https://github.com/KuzenkovAG/restaurant_menu/blob/c363ee75c843fc91eede72ef5863c2975d364a45/src/admin/update_db.py#L212)<br>
+Получение данных из excel - [src/admin/parser.py: 53:..](https://github.com/KuzenkovAG/restaurant_menu/blob/c363ee75c843fc91eede72ef5863c2975d364a45/src/admin/parsers.py#L53)<br>
+* Скидка (колонка G в таблице).<br>
+Модель - [src/dishes/models.py: 20](https://github.com/KuzenkovAG/restaurant_menu/blob/d7c37b26ed60e9940e88a9ae38347617a535a062/src/dishes/models.py#L20)<br>
+Вывод пользователю - [src/dishes/schemas.py: 17:21](https://github.com/KuzenkovAG/restaurant_menu/blob/d7c37b26ed60e9940e88a9ae38347617a535a062/src/dishes/schemas.py#L17)<br>
+Получение из админки - [src/admin/parsers.py: 92](https://github.com/KuzenkovAG/restaurant_menu/blob/d7c37b26ed60e9940e88a9ae38347617a535a062/src/admin/parsers.py#L92)<br>
 
 ## Install pre-commit hooks (windows)
 1. Install venv
