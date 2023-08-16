@@ -1,6 +1,7 @@
 import abc
 
 import pandas
+from pandas import Series
 
 MENU_ID_COL = 0
 MENU_TITLE_COL = 1
@@ -14,6 +15,11 @@ DISH_ID_COL = 2
 DISH_TITLE_COL = 3
 DISH_DESC_COL = 4
 DISH_PRICE_COL = 5
+DISH_DISCOUNT_COL = 6
+
+PERSENT_COEFF = 100
+MIN_DISCOUNT = 0
+MAX_DISCOUNT = 1
 
 
 class BaseParser(abc.ABC):
@@ -83,15 +89,28 @@ class ExcelParser(BaseParser):
                 }
             elif not pandas.isnull(row[DISH_ID_COL]):
                 dish_id = row[DISH_ID_COL]
+                discount = await self._get_discount(row)
                 data['dishes'][dish_id] = {
                     'id': dish_id,
                     'title': row[DISH_TITLE_COL],
                     'description': row[DISH_DESC_COL],
                     'price': row[DISH_PRICE_COL],
+                    'discount': discount,
                     'menu_id': menu_id,
                     'submenu_id': submenu_id,
                 }
         return data
+
+    @staticmethod
+    async def _get_discount(row: Series) -> str:
+        """Get discount from cell."""
+        try:
+            discount = 0 if pandas.isnull(row[DISH_DISCOUNT_COL]) else float(row[DISH_DISCOUNT_COL]) / PERSENT_COEFF
+        except KeyError:
+            discount = 0
+        discount = MIN_DISCOUNT if discount < MIN_DISCOUNT else discount
+        discount = MAX_DISCOUNT if discount > MAX_DISCOUNT else discount
+        return str(discount)
 
 
 async def parse_db(menus: list) -> dict[str, dict[str, dict]]:
@@ -126,17 +145,17 @@ async def parse_db(menus: list) -> dict[str, dict[str, dict]]:
     total_submenus = {}
     total_dishes = {}
     for menu in menus:
-        total_menus[menu.id] = {
-            'id': menu.id,
-            'title': menu.title,
-            'description': menu.description,
+        total_menus[menu[0].id] = {
+            'id': menu[0].id,
+            'title': menu[0].title,
+            'description': menu[0].description,
         }
-        for submenu in menu.submenus:
+        for submenu in menu[0].submenus:
             total_submenus[submenu.id] = {
                 'id': submenu.id,
                 'title': submenu.title,
                 'description': submenu.description,
-                'menu_id': menu.id,
+                'menu_id': menu[0].id,
             }
             for dish in submenu.dishes:
                 total_dishes[dish.id] = {
@@ -144,7 +163,7 @@ async def parse_db(menus: list) -> dict[str, dict[str, dict]]:
                     'title': dish.title,
                     'description': dish.description,
                     'price': dish.description,
-                    'menu_id': menu.id,
+                    'menu_id': menu[0].id,
                     'submenu_id': submenu.id,
                 }
     return {'menus': total_menus, 'submenus': total_submenus, 'dishes': total_dishes}

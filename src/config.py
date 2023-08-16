@@ -39,6 +39,9 @@ class Settings(BaseSettings):
     )
     FROM_GOOGLE_SHEETS: bool = True
 
+    # discount
+    DEFAULT_DISCOUNT: int = 0
+
     @property
     def db_url(self) -> str:
         """Product db url."""

@@ -29,7 +29,7 @@ class UpdaterDB:
 
     async def update_db_from_admin_data(self):
         """Update db from admin data."""
-        db_data = await parse_db(await self.menu_service.get_with_relations())
+        db_data = await parse_db(await self.menu_service.repository.get_with_relations())
         admin_data = await self.admin_parser.parse()
         db_data = await self._compare_and_update_menus(admin_data, db_data)
         db_data = await self._compare_and_update_submenus(admin_data, db_data)

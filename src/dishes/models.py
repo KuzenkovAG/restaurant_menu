@@ -1,6 +1,7 @@
 from sqlalchemy import UUID, Column, ForeignKey, Numeric, String
 from sqlalchemy.orm import relationship
 
+from src.config import settings
 from src.core.models import BaseUUIDDescriptionModel
 
 
@@ -16,5 +17,6 @@ class Dish(BaseUUIDDescriptionModel):
         UUID(as_uuid=False),
         ForeignKey('submenus.id', ondelete='CASCADE'),
     )
+    discount = Column(Numeric(precision=5, scale=2), default=settings.DEFAULT_DISCOUNT)
 
     submenu = relationship('SubMenu', back_populates='dishes')

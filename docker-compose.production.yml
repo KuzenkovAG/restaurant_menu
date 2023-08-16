@@ -58,6 +58,9 @@ services:
       sh -c "
         celery -A src.celery_conf worker -B --loglevel=info
       "
+    environment:
+      - REDIS_HOST=redis
+      - DB_HOST=db
     env_file:
       - .env
 

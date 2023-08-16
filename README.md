@@ -68,12 +68,13 @@ docker compose -f docker-compose.testing.yml up --build
 #### ДЗ-4
 * Обновление меню из google sheets раз в 15 сек.
 ```python
-FROM_GOOGLE_SHEETS = False  # False из файла src/admin/Menu.xlsx, True - из Google sheet
+FROM_GOOGLE_SHEETS = True  # True - из Google sheet, False из файла src/admin/Menu.xlsx
 ```
 [Таблица google sheets](https://docs.google.com/spreadsheets/d/1Fk0z7zcl8A5ugGeoZ-DKi9vB_j9XUQyBUSo2sz3W0DA/edit#gid=0)<br>
 [src/config.py: 34-40](https://github.com/KuzenkovAG/restaurant_menu/blob/c363ee75c843fc91eede72ef5863c2975d364a45/src/config.py#L40)<br>
 [src/admin/update_db.py: 215](https://github.com/KuzenkovAG/restaurant_menu/blob/c363ee75c843fc91eede72ef5863c2975d364a45/src/admin/update_db.py#L212)<br>
 [src/admin/parser.py: 53:94](https://github.com/KuzenkovAG/restaurant_menu/blob/c363ee75c843fc91eede72ef5863c2975d364a45/src/admin/parsers.py#L53)<br>
+* Скидка (колонка G в таблице).
 
 ## Install pre-commit hooks (windows)
 1. Install venv
